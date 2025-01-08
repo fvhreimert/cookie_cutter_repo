@@ -3,13 +3,13 @@ import os
 import torch
 import typer
 from model import FredNet
-
+from pathlib import Path
 from data import corrupt_mnist
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]  # Adjust to match project structure
 
-
-def evaluate(model_checkpoint: str = os.path.join(os.getcwd(), "model_checkpoint.pt")) -> None:
+def evaluate(model_checkpoint: str = os.path.join(PROJECT_ROOT, "models/model.pt")) -> None:
     """Evaluate a trained model."""
     print("Evaluating like my life depended on it")
     print(f"Model checkpoint: {model_checkpoint}")

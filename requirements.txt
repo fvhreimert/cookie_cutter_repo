@@ -1,4 +1,6 @@
-torch==2.4.0
-typer==0.15.1
-fastapi==0.115.6
-uvicorn==0.34.0
+torch>=2.4.0
+typer>=0.15.1
+fastapi>=0.115.6
+uvicorn>=0.34.0
+matplotlib>=3.7.0
+tqdm>=4.64.0
