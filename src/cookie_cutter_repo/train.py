@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from model import FredNet
 from torch import nn
 from tqdm import tqdm
-
+import wandb
 from data import corrupt_mnist
 
 app = typer.Typer()
@@ -46,12 +46,17 @@ def plot_training_statistics(train_loss, train_accuracy, save_path: Path):
     plt.savefig(save_path, bbox_inches="tight", dpi=300)
     print(f"Training plot saved to {save_path}")
 
-
 @app.command()
 def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10):
     """Train a model on MNIST and save training statistics."""
     print("Training day and night")
     print(f"{lr=}, {batch_size=}, {epochs=}")
+
+    # Initialize WandB
+    wandb.init(
+        project="corrupt_mnist",
+        config={"lr": lr, "batch_size": batch_size, "epochs": epochs},
+    )
 
     model = FredNet().to(DEVICE)
     train_set, _ = corrupt_mnist()
@@ -75,10 +80,12 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10):
             loss = loss_fn(y_pred, target)
             loss.backward()
             optimizer.step()
-
+            accuracy = (y_pred.argmax(dim=1) == target).float().mean().item()
             running_loss += loss.item()
             running_accuracy += (y_pred.argmax(dim=1) == target).float().mean().item()
-
+            
+            wandb.log({"train_loss": loss.item(), "train_accuracy": accuracy})
+        
         avg_loss = running_loss / len(train_dataloader)
         avg_accuracy = running_accuracy / len(train_dataloader)
 
@@ -92,9 +99,17 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10):
     torch.save(model.state_dict(), model_path)
     print(f"Model saved at: {model_path}")
 
+    # Log the model as an artifact in WandB
+    artifact = wandb.Artifact("trained_model", type="model")
+    artifact.add_file(model_path)
+    wandb.log_artifact(artifact)
+    print("Model logged as artifact in WandB.")
+
     plot_path = PLOT_DIR / "training_statistics.png"
     plot_training_statistics(train_loss, train_accuracy, save_path=plot_path)
 
-
+    # End WandB run
+    wandb.finish()
+    
 if __name__ == "__main__":
     typer.run(train)
