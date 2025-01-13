@@ -46,10 +46,7 @@ def preprocess_data() -> tuple[torch.utils.data.Dataset, torch.utils.data.Datase
         train_target.append(torch.load(os.path.join(DATA_PATH, target_path)))
     train_images = torch.cat(train_images)
     train_target = torch.cat(train_target)
-
-    test_images: torch.Tensor = torch.load(os.path.join(DATA_PATH, test_path))
-    test_target: torch.Tensor = torch.load(os.path.join(DATA_PATH, test_target_path))
-
+    
     train_images = train_images.unsqueeze(1).float()
     test_images = test_images.unsqueeze(1).float()
     train_target = train_target.long()
