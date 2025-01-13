@@ -40,22 +40,32 @@ def normalize(images: torch.Tensor) -> torch.Tensor:
 
 def preprocess_data() -> tuple[torch.utils.data.Dataset, torch.utils.data.Dataset]:
     """Return train and test dataloaders for corrupt MNIST."""
+    # Load and concatenate training data
     train_images, train_target = [], []
     for train_path, target_path in zip(train_paths_list, train_target_list):
         train_images.append(torch.load(os.path.join(DATA_PATH, train_path)))
         train_target.append(torch.load(os.path.join(DATA_PATH, target_path)))
     train_images = torch.cat(train_images)
     train_target = torch.cat(train_target)
-    
+
+    # Define and load test data
+    test_image_path = "test_images.pt"
+    test_target_path = "test_target.pt"
+    test_images: torch.Tensor = torch.load(os.path.join(DATA_PATH, test_image_path))
+    test_target: torch.Tensor = torch.load(os.path.join(DATA_PATH, test_target_path))
+
+    # Reshape and convert data types
     train_images = train_images.unsqueeze(1).float()
     test_images = test_images.unsqueeze(1).float()
     train_target = train_target.long()
     test_target = test_target.long()
 
+    # Normalize data
     train_images = normalize(train_images)
     test_images = normalize(test_images)
 
-    os.makedirs(PROCESSED_DIR, exist_ok=True)  # Ensure processed directory exists
+    # Save processed data
+    os.makedirs(PROCESSED_DIR, exist_ok=True)
     torch.save(train_images, os.path.join(PROCESSED_DIR, "train_images.pt"))
     torch.save(train_target, os.path.join(PROCESSED_DIR, "train_target.pt"))
     torch.save(test_images, os.path.join(PROCESSED_DIR, "test_images.pt"))
