@@ -7,7 +7,8 @@ import torch
 import typer
 
 # Dynamically determine project root directory
-PROJECT_ROOT = Path(__file__).resolve().parents[1]  # Adjust to match project structure
+PROJECT_ROOT = Path(__file__).resolve().parents[1] if "__file__" in globals() else Path.cwd()
+
 
 # Define paths relative to the project root
 DATA_PATH = PROJECT_ROOT / "data/raw/corruptmnist_v1"
