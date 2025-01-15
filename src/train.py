@@ -48,7 +48,7 @@ def plot_training_statistics(train_loss, train_accuracy, save_path: Path):
     print(f"Training plot saved to {save_path}")
 
 @app.command()
-def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 2):
+def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10):
     """Train a model on MNIST and save training statistics."""
     print("Training day and night")
     print(f"{lr=}, {batch_size=}, {epochs=}")
@@ -109,8 +109,37 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 2):
     plot_path = PLOT_DIR / "training_statistics.png"
     plot_training_statistics(train_loss, train_accuracy, save_path=plot_path)
 
+     # Log the training plot as an artifact
+    plot_artifact = wandb.Artifact("training_plot", type="visualization")
+    plot_artifact.add_file(plot_path)
+    wandb.log_artifact(plot_artifact)
+    print("Training plot logged as artifact in WandB.")
+
+    artifact = wandb.Artifact(
+        "trained_model",
+        type="model",
+        description="FredNet trained on corrupt MNIST",
+        metadata={"epochs": epochs, "learning_rate": lr, "batch_size": batch_size}
+    )
+    artifact.add_file(model_path)
+    wandb.log_artifact(artifact)
+
+    final_model_path = MODEL_DIR / "final_model_epoch_{epochs}.pt"
+    torch.save(model.state_dict(), final_model_path)
+
+    final_model_artifact = wandb.Artifact(
+    name="final_model",  # Clear name indicating it's the last epoch model
+    type="model",
+    description=f"Final model after {epochs} epochs of training",
+    metadata={"epochs": epochs, "learning_rate": lr, "batch_size": batch_size}
+)
+    final_model_artifact.add_file(final_model_path)
+    wandb.log_artifact(final_model_artifact)
+
     # End WandB run
     wandb.finish()
+
+
 
 if __name__ == "__main__":
     typer.run(train)
