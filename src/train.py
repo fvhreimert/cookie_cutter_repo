@@ -127,16 +127,22 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10):
     final_model_path = MODEL_DIR / "final_model_epoch_{epochs}.pt"
     torch.save(model.state_dict(), final_model_path)
 
+    # Log the final model as an artifact
     final_model_artifact = wandb.Artifact(
-    name="final_model",  # Clear name indicating it's the last epoch model
-    type="model",
-    description=f"Final model after {epochs} epochs of training",
-    metadata={"epochs": epochs, "learning_rate": lr, "batch_size": batch_size}
-)
+        name="final_model",
+        type="model",
+        description=f"Final model after {epochs} epochs of training",
+        metadata={"epochs": epochs, "learning_rate": lr, "batch_size": batch_size}
+    )
     final_model_artifact.add_file(final_model_path)
     wandb.log_artifact(final_model_artifact)
 
-    # End WandB run
+    # Link the artifact to the W&B Model Registry
+    wandb.run.link_artifact(
+        final_model_artifact, 
+        "fvhreimert-danmarks-tekniske-universitet-dtu-org/wandb-registry-model/frednet"
+    )
+        # End WandB run
     wandb.finish()
 
 

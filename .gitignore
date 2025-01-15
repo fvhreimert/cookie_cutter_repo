@@ -2,6 +2,7 @@ docs/site/
 # test cache
 manual_test/
 
+wandb/
 # other local dev info
 .vscode/
 
