@@ -1,8 +1,10 @@
-from torch.utils.data import Dataset
-from tests import _TEST_ROOT, _PROJECT_ROOT, _PATH_DATA
-from src.data import corrupt_mnist
 import torch
+from torch.utils.data import Dataset
+
+from src.data import corrupt_mnist
 from src.model import FredNet
+from tests import _PATH_DATA, _PROJECT_ROOT, _TEST_ROOT
+
 
 def test_data():
     train, test = corrupt_mnist()

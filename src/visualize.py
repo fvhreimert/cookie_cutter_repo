@@ -7,7 +7,7 @@ import typer
 from model import FredNet  # Import FredNet from the local model.py
 
 # Define project root and directories
-PROJECT_ROOT = Path(__file__).resolve().parents[2]  # Adjust to reach the project root
+PROJECT_ROOT = Path(__file__).resolve().parents[1]  # Adjust to reach the project root
 MODEL_DIR = PROJECT_ROOT / "models"
 PLOT_DIR = PROJECT_ROOT / "reports/figures"
 MODEL_DIR.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists

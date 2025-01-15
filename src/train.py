@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from model import FredNet
 from torch import nn
 from tqdm import tqdm
+
 import wandb
 from data import corrupt_mnist
 
@@ -47,7 +48,7 @@ def plot_training_statistics(train_loss, train_accuracy, save_path: Path):
     print(f"Training plot saved to {save_path}")
 
 @app.command()
-def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10):
+def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 2):
     """Train a model on MNIST and save training statistics."""
     print("Training day and night")
     print(f"{lr=}, {batch_size=}, {epochs=}")
@@ -83,9 +84,9 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10):
             accuracy = (y_pred.argmax(dim=1) == target).float().mean().item()
             running_loss += loss.item()
             running_accuracy += (y_pred.argmax(dim=1) == target).float().mean().item()
-            
+
             wandb.log({"train_loss": loss.item(), "train_accuracy": accuracy})
-        
+
         avg_loss = running_loss / len(train_dataloader)
         avg_accuracy = running_accuracy / len(train_dataloader)
 
@@ -110,6 +111,6 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10):
 
     # End WandB run
     wandb.finish()
-    
+
 if __name__ == "__main__":
     typer.run(train)

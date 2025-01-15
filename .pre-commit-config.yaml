@@ -8,3 +8,9 @@ repos:
     -   id: end-of-file-fixer
     -   id: check-yaml
     -   id: check-added-large-files
+    -   id: check-json
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.15  # Replace with the latest version if needed
+    hooks:
+    -   id: ruff
+        args: ["--fix"]  # Optional: automatically fix issues where possible
